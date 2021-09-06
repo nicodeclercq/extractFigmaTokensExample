@@ -1,0 +1,20 @@
+{
+  "name": "figmaexample",
+  "version": "1.0.0",
+  "description": "Color tokens extraction example with Figma API",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "Nicolas DECLERCQ",
+  "license": "ISC",
+  "dependencies": {
+    "@devexperts/remote-data-ts": "^2.0.5",
+    "@figma/plugin-typings": "^1.26.0",
+    "@typescript-eslint/parser": "^4.29.3",
+    "node-fetch": "^2.6.1"
+  },
+  "devDependencies": {
+    "@types/node": "^16.4.0"
+  }
+}
