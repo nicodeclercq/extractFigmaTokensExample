@@ -104,23 +104,18 @@ const generateFiles = (styles) => {
   writeFileSync('./build/colors.json', templateJSON(styles));
 }
 
-const getState = () => {
-  try{
-    const fileContent = readFile('./build/colors.json');
-    return {
-      state: 'RETRIEVED',
-      data: JSON.parse(fileContent),
-    }
-  } catch(e){
-    if (e.code === 'ENOENT') {
-      return {
+const getState = () => Promise.resolve()
+  .then(() => readFile('./build/colors.json'))
+  .then(fileContent => ({
+    state: 'RETRIEVED',
+    data: JSON.parse(fileContent),
+  }))
+  .catch(e => e.code === 'ENOENT'
+    ? Promise.resolve({ // the script has not been run yet
         state: 'EMPTY'
-      }
-    } else {
-      throw e;
-    }
-  }
-}
+      })
+    : Promise.reject(e)
+  );
 
 const getAddedData = (lastData, newData) => Object
   .entries(newData)
@@ -161,18 +156,18 @@ const getVersionType = (changes) => {
 }
 
 const createVersionBumpType = (lastState) => Promise.resolve()
-  .then(() => getState())
+  .then(getState)
   .then(newState => interpretChanges(lastState, newState))
   .then(getVersionType)
   .then((versionType) => writeFileSync('./VERSION_BUMP_TYPE', versionType))
 
-function run(){
+async function run (){
   if(!TOKEN){
     console.error('The Figma API token is not defined, you need to set an environment variable `FIGMA_API_TOKEN` to run the script');
     return;
   }
 
-  const lastState = getState();
+  const lastState = await getState();
   
   fetchFigmaFile(FILE_KEY)
     .then(getStyleColors)
